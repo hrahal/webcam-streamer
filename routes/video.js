@@ -12,27 +12,39 @@ var config = require('config'),
 
 exports.stream = function (req, res, next) {
 
-    res.writeHead(206, {
-        "Content-Type": "video/flv"
+    res.writeHead(200, {
+        "Content-Type": "video/webm",
+        'Connection' : 'keep-alive'
     });
 
     var video = ffmpeg();
 
     video
         .input('/dev/video0')
+        .inputFPS(30)
+        .format('v4l2')
         .size('640x480')
-        .videoCodec('libx264')
-        .audioCodec('libmp3lame')
-        .inputFPS(29.7)
-        .duration(3)
-        .format('flv') //stick to webm 
+        .fps(5)
+        .format('oss')
+        .format('sdl')
+        .audioCodec('libvorbis')
+        .audioBitrate('48k')
+        .videoCodec('libvpx')
+        .videoBitrate('448k')
+        .format('webm')
+        .outputOptions([
+            '-fflags nobuffer',
+            '-flush_packets 1'
+        ])
         .on('error', function (err) {
             console.log(err.message);
         })
         .on('end', function () {
             console.log('streaming finished');
         })
-        .pipe(res, { end: true });
+        .pipe(res, {
+            end: true
+        });
 };
 
 
