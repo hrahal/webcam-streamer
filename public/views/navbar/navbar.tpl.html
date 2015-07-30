@@ -1,0 +1,11 @@
+
+<div class="container">
+  <div class="row">
+    <ul class="nav">
+      <li ng-repeat="item in items" class="navbar-item" ui-sref-active="navbar-active">
+        <a ui-sref="app.{{ item | lowercase }}">{{ item }}</a>
+      </li>
+    </ul>
+    
+  </div>
+</div>

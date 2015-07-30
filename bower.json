@@ -1,0 +1,10 @@
+{
+  "name": "angular-ui-seed",
+  "description": "A starter project for AngularJS",
+  "version": "0.0.2",
+  "license": "BSD",
+  "dependencies": {
+    "angular": "latest",
+    "angular-ui-router": "~0.2.10"
+  }
+}

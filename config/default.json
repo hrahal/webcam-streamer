@@ -1,0 +1,11 @@
+{
+    "api": {
+        "url": "http://api.openweathermap.org/data/2.5/"
+    },
+    "mongodb": {
+        "db" : "mongodb://localhost:27017/test",
+        "logging" : {
+            "enabled": true
+        }
+    }
+}
