@@ -6,9 +6,6 @@ var express = require('express'),
     favicon = require('serve-favicon'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
-    mongoose = require('mongoose'),
-    logger = require('winston'),
-    logdb = require('winston-mongodb').MongoDB,
     config = require('config'),
     router = express.Router(),
     app = express();
@@ -19,7 +16,6 @@ var express = require('express'),
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use('/api', express.static(path.join(__dirname, 'public')));
 
 /* routes*/
 require('./routes/routes')(router);

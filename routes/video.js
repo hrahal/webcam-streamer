@@ -21,7 +21,7 @@ exports.stream = function (req, res, next) {
 
     video
         .input('/dev/video0')
-        .inputFPS(30)
+        .inputFPS(10)
         .format('v4l2')
         .size('640x480')
         .fps(5)
@@ -32,19 +32,19 @@ exports.stream = function (req, res, next) {
         .videoCodec('libvpx')
         .videoBitrate('448k')
         .format('webm')
+        //.duration(5)
         .outputOptions([
             '-fflags nobuffer',
-            '-flush_packets 1'
+            '-flush_packets 1',
+            '-r 30'
         ])
         .on('error', function (err) {
-            console.log(err.message);
+            console.log(err);
         })
         .on('end', function () {
             console.log('streaming finished');
         })
         .pipe(res, {
-            end: true
+            end: false
         });
 };
-
-
