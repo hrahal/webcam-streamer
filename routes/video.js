@@ -21,22 +21,27 @@ exports.stream = function (req, res, next) {
 
     video
         .input('/dev/video0')
-        .inputFPS(10)
+        .inputFPS(30)
         .format('v4l2')
-        .size('640x480')
-        .fps(5)
-        .format('oss')
-        .format('sdl')
+        .fps(10)
         .audioCodec('libvorbis')
-        .audioBitrate('48k')
+        .audioBitrate('128k')
         .videoCodec('libvpx')
-        .videoBitrate('448k')
+        .videoBitrate('600k')
         .format('webm')
-        //.duration(5)
         .outputOptions([
             '-fflags nobuffer',
             '-flush_packets 1',
-            '-r 30'
+            '-g 30',
+            '-crf 10',
+            '-quality good',
+            '-cpu-used 0',
+            '-qmin 10',
+            '-qmax 42',
+            '-maxrate 500k',
+            '-bufsize 1000k',
+            '-threads 4',
+            '-vf scale=-1:480'
         ])
         .on('error', function (err) {
             console.log(err);
