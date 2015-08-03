@@ -1,10 +1,7 @@
 "use strict";
 
-var config = require('config'),
-    logger = require('winston'),
-    debug = require('debug')('weather:log'),
+var debug = require('debug')('weather:log'),
     error = require('debug')('weather:error'),
-    http = require('http'),
     ffmpeg = require('fluent-ffmpeg'),
     fs = require('fs');
 
@@ -21,9 +18,7 @@ exports.stream = function (req, res, next) {
 
     video
         .input('/dev/video0')
-        .inputFPS(30)
         .format('v4l2')
-        .fps(10)
         .audioCodec('libvorbis')
         .audioBitrate('128k')
         .videoCodec('libvpx')
@@ -41,7 +36,8 @@ exports.stream = function (req, res, next) {
             '-maxrate 500k',
             '-bufsize 1000k',
             '-threads 4',
-            '-vf scale=-1:480'
+            '-vf scale=-1:480',
+            '-deadline realtime'
         ])
         .on('error', function (err) {
             console.log(err);

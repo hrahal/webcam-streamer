@@ -3,23 +3,12 @@
 var express = require('express'),
     fs = require('fs'),
     path = require('path'),
-    favicon = require('serve-favicon'),
-    cookieParser = require('cookie-parser'),
-    bodyParser = require('body-parser'),
-    config = require('config'),
     router = express.Router(),
     app = express();
 
-//uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-
 /* routes*/
 require('./routes/routes')(router);
-app.use('/api', router);
+app.use('/api', router); //route base
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
