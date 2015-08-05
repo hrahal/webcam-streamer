@@ -8,110 +8,90 @@
 var app = require('../app');
 var debug = require('debug')('app:server');
 var http = require('http');
-var cluster = require('cluster');
-var CPUs = require('os').cpus();
-var async = require('async');
 
-if (cluster.isMaster) {
-    //fork workers    
+/**
+ * Normalize a port into a number, string, or false.
+ */
 
-    async.each(CPUs, function (cpu, cb) {
-        cluster.fork();
-        cb(cpu);
-    });
-    
-    async.each(cluster.workers, function (worker, cb) {
-        console.log('worker running with ID', worker.process.pid)  ;  
-        cb(worker);
-    });
+var normalizePort = function (val) {
+    var port = parseInt(val, 10);
 
-    cluster.on('exit', function (worker) {
-        console.log('worker ' + worker.process.pid + ' died');
-    });
+    if (isNaN(port)) {
+        // named pipe
+        return val;
+    }
 
-} else {
+    if (port >= 0) {
+        // port number
+        return port;
+    }
 
-    /**
-     * Normalize a port into a number, string, or false.
-     */
+    return false;
+};
 
-    var normalizePort = function (val) {
-        var port = parseInt(val, 10);
+/**
+ * Event listener for HTTP server "error" event.
+ */
 
-        if (isNaN(port)) {
-            // named pipe
-            return val;
-        }
+var onError = function (error) {
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
 
-        if (port >= 0) {
-            // port number
-            return port;
-        }
+    var bind = typeof port === 'string'
+        ? 'Pipe ' + port
+        : 'Port ' + port;
 
-        return false;
-    };
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+    case 'EACCES':
+        console.error(bind + ' requires elevated privileges');
+        process.exit(1);
+        break;
+    case 'EADDRINUSE':
+        console.error(bind + ' is already in use');
+        process.exit(1);
+        break;
+    default:
+        throw error;
+    }
+};
 
-    /**
-     * Event listener for HTTP server "error" event.
-     */
+/**
+ * Event listener for HTTP server "listening" event.
+ */
 
-    var onError = function (error) {
-        if (error.syscall !== 'listen') {
-            throw error;
-        }
+var onListening = function () {
+    var addr = server.address(),
+        bind = typeof addr === 'string'
+            ? 'pipe ' + addr
+            : 'port ' + addr.port;
+    debug('Listening on ' + bind);
+    console.log('Express server listening on port', port);
+    console.log(app.get('env'));
+};
 
-        var bind = typeof port === 'string'
-            ? 'Pipe ' + port
-            : 'Port ' + port;
+/**
+ * Get port from environment and store in Express.
+ */
 
-        // handle specific listen errors with friendly messages
-        switch (error.code) {
-        case 'EACCES':
-            console.error(bind + ' requires elevated privileges');
-            process.exit(1);
-            break;
-        case 'EADDRINUSE':
-            console.error(bind + ' is already in use');
-            process.exit(1);
-            break;
-        default:
-            throw error;
-        }
-    };
+var port = normalizePort(process.env.NODE_PORT || '3000');
+app.set('port', port);
 
-    /**
-     * Event listener for HTTP server "listening" event.
-     */
+/**
+ * Create HTTP server.
+ */
 
-    var onListening = function () {
-        var addr = server.address(),
-            bind = typeof addr === 'string'
-                ? 'pipe ' + addr
-                : 'port ' + addr.port;
-        debug('Listening on ' + bind);
-        console.log('Express server listening on port', port);
-        console.log(app.get('env'));
-    };
+var server = http.createServer(app);
 
-    /**
-     * Get port from environment and store in Express.
-     */
+module.exports = server;
+require('./../sockets/sockets')();
 
-    var port = normalizePort(process.env.NODE_PORT || '3000');
-    app.set('port', port);
+/**
+ * Listen on provided port, on all network interfaces.
+ */
 
-    /**
-     * Create HTTP server.
-     */
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
 
-    var server = http.createServer(app);
-
-    /**
-     * Listen on provided port, on all network interfaces.
-     */
-
-    server.listen(port);
-    server.on('error', onError);
-    server.on('listening', onListening);
-
-}

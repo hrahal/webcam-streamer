@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+<title>Socket.IO</title>
+</head>
+<body>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="socket.io-stream.js"></script>
+    <script>
+
+        var socket = io();
+
+        ss(socket).emit('video streaming', 'start');
+        socket.on('video streaming', function(data) {
+            console.log('stream started');
+        });
+
+    </script>
+</body>
+</html>

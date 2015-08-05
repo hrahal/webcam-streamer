@@ -6,8 +6,10 @@ var express = require('express'),
     router = express.Router(),
     app = express();
 
-/* routes*/
+app.use(express.static(path.join(__dirname, 'public')));
+/* routes*/;
 require('./routes/routes')(router);
+
 app.use('/api', router); //route base
 
 // catch 404 and forward to error handler
